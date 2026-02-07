@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onLogout?: () => void;
 }
 
 const menuItems = [
@@ -37,7 +38,7 @@ const menuItems = [
   { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
 ];
 
-const AdminSidebar = ({ activeTab, setActiveTab }: SidebarProps) => {
+const AdminSidebar = ({ activeTab, setActiveTab, onLogout }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -106,7 +107,10 @@ const AdminSidebar = ({ activeTab, setActiveTab }: SidebarProps) => {
           <Settings className="w-5 h-5 shrink-0" />
           {!collapsed && <span>Settings</span>}
         </button>
-        <button className="w-full sidebar-item text-destructive hover:bg-destructive/10">
+        <button 
+          onClick={onLogout}
+          className="w-full sidebar-item text-destructive hover:bg-destructive/10"
+        >
           <LogOut className="w-5 h-5 shrink-0" />
           {!collapsed && <span>Logout</span>}
         </button>

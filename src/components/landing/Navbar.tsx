@@ -83,7 +83,7 @@ const Navbar = () => {
               size="sm"
               asChild
             >
-              <Link to="/admin">Admin Login</Link>
+              <Link to="/auth">Admin Login</Link>
             </Button>
           </div>
           
@@ -125,7 +125,7 @@ const Navbar = () => {
               ))}
               <div className="pt-2">
                 <Button className="w-full" asChild>
-                  <Link to="/admin">Admin Login</Link>
+                  <Link to="/auth">Admin Login</Link>
                 </Button>
               </div>
             </div>
