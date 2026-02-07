@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import DashboardOverview from "@/components/admin/DashboardOverview";
 import StudentManagement from "@/components/admin/StudentManagement";
 import AttendanceModule from "@/components/admin/AttendanceModule";
 import FeesModule from "@/components/admin/FeesModule";
+import { useAuth } from "@/hooks/useAuth";
 
 const tabTitles: Record<string, string> = {
   dashboard: "Dashboard",
@@ -22,6 +24,19 @@ const tabTitles: Record<string, string> = {
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { user, loading, isSchoolAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && (!user || !isSchoolAdmin)) {
+      navigate('/auth');
+    }
+  }, [user, loading, isSchoolAdmin, navigate]);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
   
   const renderContent = () => {
     switch (activeTab) {
@@ -45,9 +60,17 @@ const AdminDashboard = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
       
       <div className="ml-20 lg:ml-64 transition-all duration-300">
         <AdminHeader title={tabTitles[activeTab]} />
