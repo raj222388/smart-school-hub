@@ -7,28 +7,30 @@ import {
   Users, 
   Settings, 
   LogOut, 
-  Plus,
   ChevronLeft,
   ChevronRight,
   ShoppingBag,
   BarChart3,
-  GraduationCap
+  GraduationCap,
+  Video
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
 import SuperAdminHeader from '@/components/super-admin/SuperAdminHeader';
 import SuperAdminOverview from '@/components/super-admin/SuperAdminOverview';
 import SchoolManagement from '@/components/super-admin/SchoolManagement';
 import SchoolAdminManagement from '@/components/super-admin/SchoolAdminManagement';
 import SuperAdminSettings from '@/components/super-admin/SuperAdminSettings';
+import LearningVideosManagement from '@/components/super-admin/LearningVideosManagement';
+import MarketplaceProductsManagement from '@/components/super-admin/MarketplaceProductsManagement';
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'schools', label: 'Schools', icon: School },
   { id: 'school-admins', label: 'School Admins', icon: Users },
-  { id: 'tutors', label: 'Tutors', icon: GraduationCap },
+  { id: 'learning-videos', label: 'Learning Videos', icon: Video },
   { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag },
+  { id: 'tutors', label: 'Tutors', icon: GraduationCap },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
@@ -36,8 +38,9 @@ const tabTitles: Record<string, string> = {
   dashboard: 'Dashboard Overview',
   schools: 'School Management',
   'school-admins': 'School Admin Management',
-  tutors: 'Tutor Management',
+  'learning-videos': 'Learning Videos',
   marketplace: 'Product Marketplace',
+  tutors: 'Tutor Management',
   analytics: 'Profit Analytics',
   settings: 'Account Settings',
 };
@@ -67,6 +70,10 @@ const SuperAdminDashboard = () => {
         return <SchoolManagement />;
       case 'school-admins':
         return <SchoolAdminManagement />;
+      case 'learning-videos':
+        return <LearningVideosManagement />;
+      case 'marketplace':
+        return <MarketplaceProductsManagement />;
       case 'settings':
         return <SuperAdminSettings />;
       default:

@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      learning_videos: {
+        Row: {
+          age_group: string
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          age_group?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          age_group?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
+      marketplace_products: {
+        Row: {
+          category: string
+          cod_available: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          minimum_order: number
+          name: string
+          price: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          cod_available?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          minimum_order?: number
+          name: string
+          price: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          cod_available?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          minimum_order?: number
+          name?: string
+          price?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
