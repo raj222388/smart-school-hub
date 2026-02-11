@@ -23,6 +23,7 @@ import SchoolAdminManagement from '@/components/super-admin/SchoolAdminManagemen
 import SuperAdminSettings from '@/components/super-admin/SuperAdminSettings';
 import LearningVideosManagement from '@/components/super-admin/LearningVideosManagement';
 import MarketplaceProductsManagement from '@/components/super-admin/MarketplaceProductsManagement';
+import TutorManagement from '@/components/super-admin/TutorManagement';
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -74,6 +75,8 @@ const SuperAdminDashboard = () => {
         return <LearningVideosManagement />;
       case 'marketplace':
         return <MarketplaceProductsManagement />;
+      case 'tutors':
+        return <TutorManagement />;
       case 'settings':
         return <SuperAdminSettings />;
       default:

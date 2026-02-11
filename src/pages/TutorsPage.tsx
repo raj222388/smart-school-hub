@@ -12,110 +12,47 @@ import {
   ChevronDown,
   GraduationCap
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
-const tutors = [
-  {
-    id: "1",
-    name: "Dr. Priya Sharma",
-    subject: "Mathematics",
-    classes: "9th - 12th",
-    location: "Delhi",
-    rating: 4.9,
-    reviews: 120,
-    experience: "15+ years",
-    price: "₹500/hr",
-    verified: true,
-    plan: "Lifetime",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=face",
-    bio: "PhD in Mathematics with expertise in competitive exam preparation. Specializes in IIT-JEE and board exams.",
-  },
-  {
-    id: "2",
-    name: "Rajesh Kumar",
-    subject: "Physics",
-    classes: "11th - 12th",
-    location: "Mumbai",
-    rating: 4.8,
-    reviews: 95,
-    experience: "12 years",
-    price: "₹450/hr",
-    verified: true,
-    plan: "Yearly",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
-    bio: "Former IIT professor with passion for making physics simple and fun for students.",
-  },
-  {
-    id: "3",
-    name: "Anita Gupta",
-    subject: "English",
-    classes: "1st - 8th",
-    location: "Bangalore",
-    rating: 4.9,
-    reviews: 150,
-    experience: "10 years",
-    price: "₹350/hr",
-    verified: true,
-    plan: "Monthly",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&crop=face",
-    bio: "Certified English language trainer with focus on spoken English and grammar fundamentals.",
-  },
-  {
-    id: "4",
-    name: "Vikram Singh",
-    subject: "Chemistry",
-    classes: "9th - 12th",
-    location: "Chennai",
-    rating: 4.7,
-    reviews: 80,
-    experience: "8 years",
-    price: "₹400/hr",
-    verified: true,
-    plan: "Yearly",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
-    bio: "Chemistry enthusiast who makes organic and inorganic chemistry easy to understand.",
-  },
-  {
-    id: "5",
-    name: "Meera Reddy",
-    subject: "Biology",
-    classes: "11th - 12th",
-    location: "Hyderabad",
-    rating: 4.8,
-    reviews: 110,
-    experience: "14 years",
-    price: "₹450/hr",
-    verified: true,
-    plan: "Lifetime",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-    bio: "Medical doctor turned educator, specializing in NEET preparation and medical entrance exams.",
-  },
-  {
-    id: "6",
-    name: "Arjun Menon",
-    subject: "Computer Science",
-    classes: "9th - 12th",
-    location: "Kochi",
-    rating: 4.9,
-    reviews: 75,
-    experience: "6 years",
-    price: "₹500/hr",
-    verified: true,
-    plan: "Monthly",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
-    bio: "Software engineer from top tech company, teaching programming and computer fundamentals.",
-  },
-];
-
-const subjects = ["All Subjects", "Mathematics", "Physics", "Chemistry", "Biology", "English", "Computer Science"];
-const locations = ["All Locations", "Delhi", "Mumbai", "Bangalore", "Chennai", "Hyderabad", "Kochi"];
+interface Tutor {
+  id: string;
+  name: string;
+  subject: string;
+  classes: string;
+  location: string;
+  rating: number;
+  reviews: number;
+  experience: string;
+  price: string;
+  verified: boolean;
+  plan: string;
+  image: string | null;
+  bio: string | null;
+}
 
 const TutorsPage = () => {
+  const [tutors, setTutors] = useState<Tutor[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All Subjects");
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
+
+  useEffect(() => {
+    const fetchTutors = async () => {
+      const { data } = await supabase
+        .from('tutors')
+        .select('*')
+        .eq('is_active', true)
+        .order('rating', { ascending: false });
+      if (data) setTutors(data);
+    };
+    fetchTutors();
+  }, []);
+
+  const subjects = ["All Subjects", ...new Set(tutors.map(t => t.subject))];
+  const locations = ["All Locations", ...new Set(tutors.map(t => t.location))];
 
   const filteredTutors = tutors.filter((tutor) => {
     const matchesSearch = tutor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

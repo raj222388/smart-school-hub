@@ -158,6 +158,63 @@ export type Database = {
         }
         Relationships: []
       }
+      tutors: {
+        Row: {
+          bio: string | null
+          classes: string
+          created_at: string
+          experience: string
+          id: string
+          image: string | null
+          is_active: boolean
+          location: string
+          name: string
+          plan: string
+          price: string
+          rating: number
+          reviews: number
+          subject: string
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          bio?: string | null
+          classes?: string
+          created_at?: string
+          experience?: string
+          id?: string
+          image?: string | null
+          is_active?: boolean
+          location?: string
+          name: string
+          plan?: string
+          price?: string
+          rating?: number
+          reviews?: number
+          subject: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          bio?: string | null
+          classes?: string
+          created_at?: string
+          experience?: string
+          id?: string
+          image?: string | null
+          is_active?: boolean
+          location?: string
+          name?: string
+          plan?: string
+          price?: string
+          rating?: number
+          reviews?: number
+          subject?: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
