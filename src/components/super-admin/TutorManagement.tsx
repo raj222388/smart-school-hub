@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Pencil, Trash2, Star, MapPin, GraduationCap } from 'lucide-react';
+import { Plus, Pencil, Trash2, Star, GraduationCap, CheckCircle, XCircle, Clock, Mail, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Tutor {
@@ -39,6 +40,9 @@ interface Tutor {
   image: string | null;
   bio: string | null;
   is_active: boolean;
+  status: string;
+  email: string | null;
+  phone: string | null;
 }
 
 const emptyTutor = {
@@ -55,10 +59,18 @@ const emptyTutor = {
   image: '',
   bio: '',
   is_active: true,
+  email: '',
+  phone: '',
 };
 
 const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Computer Science', 'Hindi', 'Social Science'];
 const plans = ['Monthly', 'Yearly', 'Lifetime'];
+
+const statusColors: Record<string, string> = {
+  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  approved: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  rejected: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+};
 
 const TutorManagement = () => {
   const [tutors, setTutors] = useState<Tutor[]>([]);
@@ -66,6 +78,7 @@ const TutorManagement = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTutor, setEditingTutor] = useState<Tutor | null>(null);
   const [form, setForm] = useState(emptyTutor);
+  const [activeTab, setActiveTab] = useState('all');
 
   const fetchTutors = async () => {
     const { data, error } = await supabase
@@ -84,6 +97,13 @@ const TutorManagement = () => {
   useEffect(() => {
     fetchTutors();
   }, []);
+
+  const pendingCount = tutors.filter(t => t.status === 'pending').length;
+
+  const filteredTutors = tutors.filter(t => {
+    if (activeTab === 'all') return true;
+    return t.status === activeTab;
+  });
 
   const openAdd = () => {
     setEditingTutor(null);
@@ -107,6 +127,8 @@ const TutorManagement = () => {
       image: tutor.image || '',
       bio: tutor.bio || '',
       is_active: tutor.is_active,
+      email: tutor.email || '',
+      phone: tutor.phone || '',
     });
     setDialogOpen(true);
   };
@@ -131,6 +153,8 @@ const TutorManagement = () => {
       image: form.image || null,
       bio: form.bio || null,
       is_active: form.is_active,
+      email: form.email || null,
+      phone: form.phone || null,
     };
 
     if (editingTutor) {
@@ -146,7 +170,7 @@ const TutorManagement = () => {
     } else {
       const { error } = await supabase
         .from('tutors')
-        .insert(payload);
+        .insert({ ...payload, status: 'approved' });
       if (error) {
         toast.error('Failed to add tutor');
         return;
@@ -165,6 +189,32 @@ const TutorManagement = () => {
       toast.error('Failed to delete tutor');
     } else {
       toast.success('Tutor deleted');
+      fetchTutors();
+    }
+  };
+
+  const handleApprove = async (tutor: Tutor) => {
+    const { error } = await supabase
+      .from('tutors')
+      .update({ status: 'approved', is_active: true, verified: true })
+      .eq('id', tutor.id);
+    if (error) {
+      toast.error('Failed to approve tutor');
+    } else {
+      toast.success(`${tutor.name} has been approved`);
+      fetchTutors();
+    }
+  };
+
+  const handleReject = async (tutor: Tutor) => {
+    const { error } = await supabase
+      .from('tutors')
+      .update({ status: 'rejected', is_active: false })
+      .eq('id', tutor.id);
+    if (error) {
+      toast.error('Failed to reject tutor');
+    } else {
+      toast.success(`${tutor.name} has been rejected`);
       fetchTutors();
     }
   };
@@ -194,7 +244,7 @@ const TutorManagement = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Tutor Management</h2>
-          <p className="text-muted-foreground">Add, edit, and manage all tutors on the platform</p>
+          <p className="text-muted-foreground">Manage tutors and approve new applications</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -211,6 +261,14 @@ const TutorManagement = () => {
               <div className="col-span-2">
                 <Label>Name *</Label>
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
               </div>
               <div>
                 <Label>Subject *</Label>
@@ -278,45 +336,99 @@ const TutorManagement = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tutors.map((tutor) => (
-          <Card key={tutor.id} className="p-4">
-            <div className="flex items-start gap-3 mb-3">
-              {tutor.image ? (
-                <img src={tutor.image} alt={tutor.name} className="w-14 h-14 rounded-xl object-cover" />
-              ) : (
-                <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-muted-foreground" />
+      {/* Tabs for filtering by status */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="all">All ({tutors.length})</TabsTrigger>
+          <TabsTrigger value="pending" className="relative">
+            Pending
+            {pendingCount > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-destructive text-destructive-foreground">
+                {pendingCount}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="approved">Approved</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={activeTab} className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredTutors.map((tutor) => (
+              <Card key={tutor.id} className="p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  {tutor.image ? (
+                    <img src={tutor.image} alt={tutor.name} className="w-14 h-14 rounded-xl object-cover" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-foreground truncate">{tutor.name}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[tutor.status] || ''}`}>
+                        {tutor.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{tutor.subject} • {tutor.location}</p>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                      <Star className="w-3 h-3 text-secondary fill-current" />
+                      {tutor.rating} ({tutor.reviews}) • {tutor.plan}
+                    </div>
+                    {(tutor.email || tutor.phone) && (
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                        {tutor.email && (
+                          <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{tutor.email}</span>
+                        )}
+                        {tutor.phone && (
+                          <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{tutor.phone}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground truncate">{tutor.name}</h3>
-                  <Badge variant={tutor.is_active ? 'default' : 'secondary'} className="text-xs ml-2 shrink-0">
-                    {tutor.is_active ? 'Active' : 'Inactive'}
-                  </Badge>
+
+                {tutor.bio && (
+                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{tutor.bio}</p>
+                )}
+
+                <div className="flex gap-2 flex-wrap">
+                  {tutor.status === 'pending' && (
+                    <>
+                      <Button size="sm" onClick={() => handleApprove(tutor)} className="flex-1">
+                        <CheckCircle className="w-3 h-3 mr-1" /> Approve
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => handleReject(tutor)} className="flex-1">
+                        <XCircle className="w-3 h-3 mr-1" /> Reject
+                      </Button>
+                    </>
+                  )}
+                  {tutor.status !== 'pending' && (
+                    <>
+                      <Button variant="outline" size="sm" className="flex-1" onClick={() => openEdit(tutor)}>
+                        <Pencil className="w-3 h-3 mr-1" /> Edit
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => toggleActive(tutor)}>
+                        {tutor.is_active ? 'Hide' : 'Show'}
+                      </Button>
+                    </>
+                  )}
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(tutor.id)}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">{tutor.subject} • {tutor.location}</p>
-                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                  <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                  {tutor.rating} ({tutor.reviews}) • {tutor.plan}
-                </div>
+              </Card>
+            ))}
+            {filteredTutors.length === 0 && (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                <Clock className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p>No {activeTab !== 'all' ? activeTab : ''} tutors found</p>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => openEdit(tutor)}>
-                <Pencil className="w-3 h-3 mr-1" /> Edit
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => toggleActive(tutor)}>
-                {tutor.is_active ? 'Hide' : 'Show'}
-              </Button>
-              <Button variant="destructive" size="sm" onClick={() => handleDelete(tutor.id)}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
