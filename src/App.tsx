@@ -10,6 +10,7 @@ import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import AuthPage from "./pages/AuthPage";
 import TutorsPage from "./pages/TutorsPage";
 import MarketplacePage from "./pages/MarketplacePage";
+import TutorRegistrationPage from "./pages/TutorRegistrationPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/tutors" element={<TutorsPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/tutor-registration" element={<TutorRegistrationPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

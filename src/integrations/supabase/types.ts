@@ -163,16 +163,19 @@ export type Database = {
           bio: string | null
           classes: string
           created_at: string
+          email: string | null
           experience: string
           id: string
           image: string | null
           is_active: boolean
           location: string
           name: string
+          phone: string | null
           plan: string
           price: string
           rating: number
           reviews: number
+          status: string
           subject: string
           updated_at: string
           verified: boolean
@@ -181,16 +184,19 @@ export type Database = {
           bio?: string | null
           classes?: string
           created_at?: string
+          email?: string | null
           experience?: string
           id?: string
           image?: string | null
           is_active?: boolean
           location?: string
           name: string
+          phone?: string | null
           plan?: string
           price?: string
           rating?: number
           reviews?: number
+          status?: string
           subject: string
           updated_at?: string
           verified?: boolean
@@ -199,16 +205,19 @@ export type Database = {
           bio?: string | null
           classes?: string
           created_at?: string
+          email?: string | null
           experience?: string
           id?: string
           image?: string | null
           is_active?: boolean
           location?: string
           name?: string
+          phone?: string | null
           plan?: string
           price?: string
           rating?: number
           reviews?: number
+          status?: string
           subject?: string
           updated_at?: string
           verified?: boolean

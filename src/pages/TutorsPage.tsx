@@ -78,10 +78,15 @@ const TutorsPage = () => {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">
               Find Your Perfect Tutor
             </h1>
-            <p className="text-lg text-primary-foreground/70 mb-8">
+            <p className="text-lg text-primary-foreground/70 mb-4">
               Connect with verified, experienced tutors for personalized learning. 
               Browse by subject, location, and experience.
             </p>
+            <div className="mb-8">
+              <Button variant="hero" size="lg" onClick={() => window.location.href = '/tutor-registration'}>
+                Register as a Tutor
+              </Button>
+            </div>
             
             {/* Search */}
             <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
@@ -95,9 +100,6 @@ const TutorsPage = () => {
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl border-0 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-lg"
                 />
               </div>
-              <Button variant="hero" size="lg" className="shrink-0">
-                Search Tutors
-              </Button>
             </div>
           </motion.div>
         </div>
